@@ -24,13 +24,22 @@ const { fetchMyIP, fetchCoordsByIP, fetchISSFlyOverTimes, nextISSTimesForMyLocat
 //   console.log('It worked! Returned fly over times:', flyTimes);
 // });
 
+const getTimes = function(obj) {
+  if (!obj) {
+    return console.log('Error: Did not get Fly Over Times properly');
+  }
+  for (let pass of obj) {
+    const datetime = new Date(0);
+    datetime.setUTCSeconds(pass.risetime);
+    console.log(`Next pass at ${datetime} for ${pass.duration} seconds!`);
+  }
+};
+
 nextISSTimesForMyLocation((error, passTimes) => {
   if (error) {
     return console.log("It didn't work!", error);
   }
-  for (let pass of passTimes) {
-    let timePass = pass.risetime;
-    let date = new Date(timePass);
-    console.log(`Next pass at ${date.toUTCString()} for ${pass.duration} seconds!`);
-  }
+  getTimes(passTimes);
 });
+
+module.exports = {getTimes};
