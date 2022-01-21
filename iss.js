@@ -9,10 +9,10 @@ const fetchMyIP = function(callback) {
       return;
     }
     let ipAddress = JSON.parse(body).ip;
-    if (!ipAddress.ip) {
+    if (!ipAddress) {
       return callback('Error IP not found', null);
     }
-    return callback(null, ipAddress.ip);
+    return callback(null, ipAddress);
   });
 };
 
@@ -45,6 +45,27 @@ const fetchISSFlyOverTimes = function(coords, callback) {
     return callback(null, flyTimes);
   });
 };
-module.exports = { fetchMyIP, fetchCoordsByIP, fetchISSFlyOverTimes };
+
+const nextISSTimesForMyLocation = function(callback) {
+  fetchMyIP((err, ip) => {
+    if (err) {
+      return callback(err, null);
+    }
+    fetchCoordsByIP(ip, (err, coords) => {
+      if (err) {
+        return callback(err, null);
+      }
+      fetchISSFlyOverTimes(coords, (err, nextPass) => {
+        if (err) {
+          return callback(err, null);
+        }
+        callback(null, nextPass);
+      });
+    });
+  });
+};
+
+
+module.exports = { fetchMyIP, fetchCoordsByIP, fetchISSFlyOverTimes, nextISSTimesForMyLocation };
 
 
